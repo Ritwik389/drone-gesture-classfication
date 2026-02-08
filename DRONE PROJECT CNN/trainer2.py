@@ -27,15 +27,21 @@ train_generator = train_datagen.flow_from_directory(
     target_size=(IMG_SIZE, IMG_SIZE),
     batch_size=BATCH_SIZE,
     class_mode='categorical',
-    subset='training'
+    subset='training',
+    seed = 0
+)
+val_datagen = ImageDataGenerator(
+    rescale=1./255, 
+    validation_split=0.2
 )
 
-validation_generator = train_datagen.flow_from_directory(
+validation_generator = val_datagen.flow_from_directory(
     DATA_DIR,
     target_size=(IMG_SIZE, IMG_SIZE),
     batch_size=BATCH_SIZE,
     class_mode='categorical',
-    subset='validation'
+    subset='validation',
+    seed=0
 )
 
 # 2. THE "TURBO" ARCHITECTURE

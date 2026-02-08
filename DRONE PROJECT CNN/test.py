@@ -5,7 +5,7 @@ import tensorflow as tf
 # --- CONFIG ---
 MODEL_PATH = "drone_cnn.keras"
 IMG_SIZE = 128
-CONFIDENCE_THRESHOLD = 0.6 # Lowered slightly to let commands through
+CONFIDENCE_THRESHOLD = 0.7 
 CLASSES = ['capture', 'down', 'flip', 'land', 'left', 'rest', 'right', 'take_off', 'up']
 
 print("Loading Model...")
@@ -18,14 +18,12 @@ while True:
     ret, frame = cap.read()
     if not ret: break
     
-    frame = cv2.flip(frame, 1) # Mirror the camera
-    
-    # --- ROI CONFIGURATION ---
-    # Right Hand Side
+    frame = cv2.flip(frame, 1) 
+
     x_start, y_start = 1200, 50
     x_end, y_end = 1500, 350
 
-    # Draw the Box (Visual Only)
+
     cv2.rectangle(frame, (x_start, y_start), (x_end, y_end), (0, 255, 0), 2)
     
     # 1. Get the Image (The Data)
