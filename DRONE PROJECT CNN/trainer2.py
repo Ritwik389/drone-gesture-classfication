@@ -6,10 +6,9 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 DATA_DIR = "dataset"
 IMG_SIZE = 128
 BATCH_SIZE = 32
-EPOCHS = 30  # Give it time to learn!
+EPOCHS = 30  
 NUM_CLASSES = 9 
 
-# 1. DATA AUGMENTATION (Keep this moderate)
 train_datagen = ImageDataGenerator (
     rescale=1./255,
     validation_split=0.2,
@@ -44,37 +43,35 @@ validation_generator = val_datagen.flow_from_directory(
     seed=0
 )
 
-# 2. THE "TURBO" ARCHITECTURE
 model = models.Sequential([
-    # Block 1 (32 Filters)
+
     layers.Conv2D(32, (3, 3), padding='same', input_shape=(IMG_SIZE, IMG_SIZE, 3)),
-    layers.BatchNormalization(), # <--- NEW: Stabilizes learning
+    layers.BatchNormalization(),
     layers.Activation('relu'),
     layers.MaxPooling2D((2, 2)),
-    
-    # Block 2 (64 Filters)
+
     layers.Conv2D(64, (3, 3), padding='same'),
-    layers.BatchNormalization(), # <--- NEW
+    layers.BatchNormalization(),
     layers.Activation('relu'),
     layers.MaxPooling2D((2, 2)),
     
-    # Block 3 (128 Filters)
+
     layers.Conv2D(128, (3, 3), padding='same'),
-    layers.BatchNormalization(), # <--- NEW
+    layers.BatchNormalization(), 
     layers.Activation('relu'),
     layers.MaxPooling2D((2, 2)),
     
-    # Block 4 (256 Filters) - Going Deeper!
-    layers.Conv2D(256, (3, 3), padding='same'), # <--- NEW BLOCK
+
+    layers.Conv2D(256, (3, 3), padding='same'),
     layers.BatchNormalization(),
     layers.Activation('relu'),
     layers.MaxPooling2D((2, 2)),
     
-    # Classifier
+
     layers.GlobalAveragePooling2D(),
-    layers.Dense(512, activation='relu'), # Bigger Dense layer
+    layers.Dense(512, activation='relu'), 
     layers.BatchNormalization(),
-    layers.Dropout(0.4), # Keep Dropout to prevent memorization
+    layers.Dropout(0.4), 
     layers.Dense(NUM_CLASSES, activation='softmax')
 ])
 
@@ -82,19 +79,18 @@ model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-# 3. THE "UNSTUCK" CALLBACKS
-# If accuracy stops improving, this lowers the Learning Rate to help it find the minimum.
+
 reduce_lr = callbacks.ReduceLROnPlateau(
     monitor='val_loss', 
-    factor=0.2,       # Divide LR by 5
-    patience=3,       # Wait 3 epochs before dropping
-    min_lr=0.00001,   # Don't go too low
+    factor=0.2,       
+    patience=3,    
+    min_lr=0.00001, 
     verbose=1
 )
 
 early_stop = callbacks.EarlyStopping(
     monitor='val_loss', 
-    patience=6,       # Wait longer before quitting
+    patience=8,       
     restore_best_weights=True
 )
 
@@ -103,7 +99,7 @@ history = model.fit(
     train_generator,
     epochs=EPOCHS,
     validation_data=validation_generator,
-    callbacks=[reduce_lr, early_stop] # Added reduce_lr here!
+    callbacks=[reduce_lr, early_stop] 
 )
 
 model.save("drone_cnn.keras")
